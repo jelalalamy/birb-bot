@@ -2,12 +2,13 @@
   "name": "birb-bot",
   "version": "1.0.0",
   "description": "",
-  "scripts":{
+  "scripts": {
     "start": "node ./main.js",
     "dev": "nodemon ./main.js"
   },
   "dependencies": {
     "discord.js": "^13.1.0",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "json-server": "^0.16.3"
   }
 }
