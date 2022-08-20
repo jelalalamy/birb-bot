@@ -4,7 +4,6 @@ const Discord = require('discord.js');
 const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] })
 
 client.login(process.env.TOKEN);
-//client.login("ODgxNTk3ODA1MTYzMDYxMjU4.YSvJ8A.cEAwyBD9h2s-4PozVgbU2U9bzPA");
 
 const cmdSymbol = "~";
 var catches = [];
@@ -30,7 +29,7 @@ client.on("messageCreate", msg => {
         console.log(`Replied to message: "${msg.content}"`);
     }
     
-    // fetching last 5 messages
+    // fetching last 7 messages
     if (msg.content === cmdSymbol + "catch"){
         channel.messages.fetch({ limit: 7 }).then((messages) => {
             messages.forEach(message => {

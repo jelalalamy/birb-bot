@@ -16,7 +16,6 @@ app.get('/', (request, response) => {
 });
 
 app.get('/tables', db.getTables);
-
 app.get('/users', db.getCharacters);
 app.get('/users/:id', db.getCharacterById);
 app.get('/users/tables', db.getTables);
