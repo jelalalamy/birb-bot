@@ -1,5 +1,7 @@
 require("dotenv").config();
 const Discord = require('discord.js');
+const {doc, getDoc, onSnapshot, setDoc} = require('firebase/firestore');
+const { firestore } = require('./config.js');
 // ngl i'm not sure why i had to include the intents, gotta figure that out later
 const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] })
 
@@ -7,6 +9,7 @@ client.login(process.env.TOKEN);
 
 const cmdSymbol = "~";
 var catches = [];
+var rawCatches = [];
 
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
@@ -69,6 +72,7 @@ client.on("messageCreate", msg => {
                             }; 
                             //console.log(character);
                             catches.push(JSON.stringify(character));
+                            rawCatches.push(character);
                         }
                     });
                     console.log("Caught a message");
@@ -85,6 +89,18 @@ client.on("messageCreate", msg => {
         //catches.forEach((caught) => console.log(caught));
         channel.send(catches.length != 0 ? catches.join("\n") : "catches is...not correct");
         catches = [];
+    }
+
+    if (msg.content === cmdSymbol + "upload"){
+        if (rawCatches.length == 0){
+            console.log("Nothing is in the catches array.");
+        } else {
+            rawCatches.forEach((caught) => {
+                const path = doc(firestore, `2021-08-21/${caught.name}`);
+                setDoc(path, caught);
+                console.log(`Uploaded ${caught.name}`);
+            });
+        }
     }
 });
 

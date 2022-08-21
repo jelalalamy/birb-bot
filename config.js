@@ -20,5 +20,3 @@ const firestore = getFirestore();
 module.exports = {
   firestore
 }
-
-//export { firestore };
