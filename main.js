@@ -36,6 +36,10 @@ client.on("messageCreate", msg => {
     
     // fetching last 7 messages
     if (command === "catch"){
+        if (args.length != 1){
+            msg.reply("Usage: ~catch <topk>");
+            return;
+        }
         channel.messages.fetch({ limit: 7 }).then((messages) => {
             messages.forEach(message => {
                 //console.log(message.embeds[0]);
@@ -59,11 +63,11 @@ client.on("messageCreate", msg => {
                             }
                         }
                         // Catch mmr?
-                        else{
-                            if(!(caught.includes('AVG') || caught.includes('Top 15') || caught.length < 5 || !caught)){
-                                catches.push(caught.substring(caught.indexOf('-') + 2,caught.length));
-                            }
-                        }
+                        // else{
+                        //    if(!(caught.includes('AVG') || caught.includes('Top 15') || caught.length < 5 || !caught)){
+                        //        catches.push(caught.substring(caught.indexOf('-') + 2,caught.length));
+                        //    }
+                        //}
                     });
                     console.log("Caught a message");
                 }
@@ -83,6 +87,10 @@ client.on("messageCreate", msg => {
     }
 
     if (command === "upload"){
+        if (args.length != 1){
+            msg.reply("Usage: ~upload <date>");
+            return;
+        }
         let date = args[0];
         if (rawCatches.length == 0){
             console.log("Nothing is in the catches array.");
@@ -98,6 +106,10 @@ client.on("messageCreate", msg => {
     }
 
     if (command === "readdate"){
+        if (args.length != 1){
+            msg.reply("Usage: ~readdate <date>");
+            return;
+        }
         let date = args[0];
         const read = async () => {
             const ref = collection(firestore, date);
@@ -113,6 +125,10 @@ client.on("messageCreate", msg => {
     }
     
     if (command === "readchar"){
+        if (args.length != 2){
+            msg.reply("Usage: ~catch <date> <character name>");
+            return;
+        }
         let date = args[0];
         // Handle characters with spaces in the name
         let char = args.slice(1, args.length).join(' ').toLowerCase();
@@ -130,6 +146,10 @@ client.on("messageCreate", msg => {
     }
 
     if (command === "compare"){
+        if (args.length != 2){
+            msg.reply("Usage: ~catch <later date> <earlier date>");
+            return;
+        }
         // TODO: Use actual dates so we can determine the earlier date, so the user can enter dates in any order
         const date1 = args[0];
         const date2 = args[1];
