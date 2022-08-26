@@ -58,6 +58,7 @@ client.on("messageCreate", msg => {
                                 rawCatches.push(character);
                             }
                         }
+                        // Catch mmr?
                         else{
                             if(!(caught.includes('AVG') || caught.includes('Top 15') || caught.length < 5 || !caught)){
                                 catches.push(caught.substring(caught.indexOf('-') + 2,caught.length));
@@ -87,11 +88,13 @@ client.on("messageCreate", msg => {
             console.log("Nothing is in the catches array.");
         } else {
             rawCatches.forEach((caught) => {
-                const path = doc(firestore, `${date}/${caught.name}`);
+                const path = doc(firestore, `${date}/${caught.name.toLowerCase()}`);
                 setDoc(path, caught);
                 console.log(`Uploaded ${caught.name}`);
             });
         }
+        catches = [];
+        rawCatches = [];
     }
 
     if (command === "readdate"){
@@ -111,22 +114,25 @@ client.on("messageCreate", msg => {
     
     if (command === "readchar"){
         let date = args[0];
-        let char = args[1];
+        // Handle characters with spaces in the name
+        let char = args.slice(1, args.length).join(' ').toLowerCase();
         console.log(`readchar => ${date}/${char}`);
         const read = async () => {
             const mySnapshot = await getDoc(doc(firestore, `${date}/${char}`));
                 if (mySnapshot.exists()){
-                    console.log("found");
                     const docData = mySnapshot.data();
                     channel.send(`Data is => ${JSON.stringify(docData)}`);
+                } else {
+                    channel.send(`Could not find "${char}"`);
                 }
             }
         read();
     }
 
     if (command === "compare"){
-        let date1 = args[0];
-        let date2 = args[1];
+        // TODO: Use actual dates so we can determine the earlier date, so the user can enter dates in any order
+        const date1 = args[0];
+        const date2 = args[1];
         let arr1 = new Map();
         let arr2 = new Map();
         const read = async () => {
@@ -138,25 +144,21 @@ client.on("messageCreate", msg => {
             querySnapshot2.forEach((doc) => {
                 arr2.set(doc.data().name, doc.data());
             });
-            console.log(arr1);
-            console.log(arr2);
-            let largestGainVal = 0;
-            let largestGainName = "";
-            let largestLossVal = 0;
-            let largestLossName = "";
+            const largestGain = {val: 0};
+            const largestLoss = {val: 0};
             arr1.forEach((char, key) => {
                 console.log(`${key} => ${char.rank} to ${arr2.get(key).rank}`);
                 let change = char.rank - arr2.get(key).rank;
-                if (change < largestGainVal){
-                    largestGainVal = change;
-                    largestGainName = key;
-                } else if (change > largestLossVal){
-                    largestLossVal = change;
-                    largestLossName = key;
+                if (change < largestGain.val){
+                    largestGain.val = change;
+                    largestGain.name = key;
+                } else if (change > largestLoss.val){
+                    largestLoss.val = change;
+                    largestLoss.name = key;
                 }
             });
-            console.log(`Largest gain: ${largestGainName}, ${largestGainVal}`);
-            console.log(`Largest loss: ${largestLossName}, ${largestLossVal}`);
+            channel.send(`Largest gain: ${largestGain.name}, ${largestGain.val}\n`+
+                        `Largest loss: ${largestLoss.name}, ${largestLoss.val}`);
         };
         read();
     }
