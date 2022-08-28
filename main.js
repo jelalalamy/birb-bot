@@ -147,20 +147,25 @@ client.on("messageCreate", msg => {
 
     if (command === "compare"){
         if (args.length != 2){
-            msg.reply("Usage: ~catch <later date> <earlier date>");
+            msg.reply("Usage: ~catch <first date> <second date>");
             return;
         }
-        // TODO: Use actual dates so we can determine the earlier date, so the user can enter dates in any order
-        const date1 = args[0];
-        const date2 = args[1];
+
+        // Retrieving and parsing dates
+        let firstDate = new Date(args[0].split('-')[0], args[0].split('-')[1]-1, args[0].split('-')[2]);
+        let secondDate = new Date(args[1].split('-')[0], args[1].split('-')[1]-1, args[1].split('-')[2]);
+        if (firstDate < secondDate) [firstDate, secondDate] = [secondDate, firstDate];
+        console.log(`Comparing dates ${firstDate.toISOString().substring(0,10)} and ${secondDate.toISOString().substring(0,10)}`);
+
         let arr1 = new Map();
         let arr2 = new Map();
+
         const read = async () => {
-            const querySnapshot1 = await getDocs(query(collection(firestore, date1), orderBy("rank")));
+            const querySnapshot1 = await getDocs(query(collection(firestore, firstDate.toISOString().substring(0,10)), orderBy("rank")));
             querySnapshot1.forEach((doc) => {
                 arr1.set(doc.data().name, doc.data());
             });
-            const querySnapshot2 = await getDocs(query(collection(firestore, date2), orderBy("rank")));
+            const querySnapshot2 = await getDocs(query(collection(firestore, secondDate.toISOString().substring(0,10)), orderBy("rank")));
             querySnapshot2.forEach((doc) => {
                 arr2.set(doc.data().name, doc.data());
             });
@@ -183,10 +188,3 @@ client.on("messageCreate", msg => {
         read();
     }
 });
-
-function getPreviousDay(date = new Date()) {
-    const previous = new Date(date.getTime());
-    previous.setDate(date.getDate() - 1);
-  
-    return previous;
-}
