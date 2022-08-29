@@ -41,9 +41,10 @@ client.on("messageCreate", msg => {
             return;
         }
         channel.messages.fetch({ limit: 7 }).then((messages) => {
+            let found = false;
             messages.forEach(message => {
                 //console.log(message.embeds[0]);
-                if (message.author.id === '432610292342587392'){
+                if (message.author.id === '432610292342587392' && !found){
                     let uglyCatch = message.embeds[0].description.split("\n");
                     //console.log(uglyCatch);
                     uglyCatch.forEach(caught => {
@@ -69,6 +70,7 @@ client.on("messageCreate", msg => {
                         //    }
                         //}
                     });
+                    found = true;
                     console.log("Caught a message");
                 }
                 else{
